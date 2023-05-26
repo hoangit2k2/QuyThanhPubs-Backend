@@ -22,7 +22,7 @@ export class Table {
   @Column({ name: 'note', length: 200, nullable: false })
   note: string;
 
-  @ManyToOne(() => Users, (users) => users.id)
+  @ManyToOne(() => Users, (users) => users.username)
   user: Users;
 
   @OneToMany(() => TableProduct, (tableProduct) => tableProduct.table)

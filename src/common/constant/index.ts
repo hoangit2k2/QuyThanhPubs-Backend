@@ -1,6 +1,6 @@
 export enum ROLE {
-  admin,
-  staff,
+  ADMIN = 'admin',
+  STAFF = 'staff',
 }
 
 export enum ORDER_PRODUCT_STATUS {

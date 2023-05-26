@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   OneToMany,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -11,10 +12,7 @@ import { ROLE } from 'src/common/constant/index';
 import { Table } from '../table/table.entity';
 @Entity()
 export class Users {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({
+  @PrimaryColumn({
     name: 'username',
     type: 'varchar',
     nullable: false,
@@ -30,7 +28,9 @@ export class Users {
   })
   password: string;
 
-  @Column()
+  @Column({
+    // type: 'enum',
+  })
   role: ROLE;
 
   @OneToMany(() => Table, (table) => table.user)
