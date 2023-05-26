@@ -3,35 +3,54 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Role } from 'src/common/constant/index.js';
+import { ROLE } from 'src/common/constant/index';
 import { Table } from '../table/table.entity';
 @Entity()
 export class Users {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    name: 'username',
+    type: 'varchar',
+    nullable: false,
+    length: 100,
+  })
   username: string;
 
-  @Column()
+  @Column({
+    name: 'password',
+    type: 'varchar',
+    nullable: false,
+    length: 100,
+  })
   password: string;
 
   @Column()
-  role: Role;
+  role: ROLE;
 
-  @ManyToOne(() => Table, (table) => table.user)
+  @OneToMany(() => Table, (table) => table.user)
   tables: Table[];
 
-  @CreateDateColumn()
-  create_at: Date;
+  @CreateDateColumn({
+    name: 'create_at',
+    type: 'date',
+  })
+  createAt: Date;
 
-  @DeleteDateColumn()
-  delete_at: Date;
+  @DeleteDateColumn({
+    name: 'delete_at',
+    type: 'date',
+  })
+  deleteAt: Date;
 
-  @UpdateDateColumn()
-  update_at: Date;
+  @UpdateDateColumn({
+    name: 'update_at',
+    type: 'date',
+  })
+  updateAt: Date;
 }
