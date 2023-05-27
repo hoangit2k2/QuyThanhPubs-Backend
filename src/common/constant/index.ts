@@ -4,6 +4,12 @@ export enum ROLE {
 }
 
 export enum ORDER_PRODUCT_STATUS {
-  delivered,
-  not_yet_delivered,
+  DELIVERED = 'delivered',
+  NOT_YET_DELIVERED = 'not_yet_delivered',
+}
+
+export enum TABLE_STATUS {
+  UNPAID = 'unpaid',
+  PAID = 'paid',
+  SERVING = 'serving',
 }

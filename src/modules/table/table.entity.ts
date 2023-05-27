@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Users } from '../users/users.entity';
 import { TableProduct } from '../table_product/table_product.entity';
+import { TABLE_STATUS } from 'src/common/constant';
 
 @Entity()
 export class Table {
@@ -21,6 +22,9 @@ export class Table {
 
   @Column({ name: 'note', length: 200, nullable: false })
   note: string;
+
+  @Column({ name: 'type', default: TABLE_STATUS.SERVING })
+  status: TABLE_STATUS;
 
   @ManyToOne(() => Users, (users) => users.username)
   user: Users;
