@@ -60,20 +60,20 @@ export class TableService {
     const table = await this.tableRepository.findOneBy({ id: tableId });
     if (table === null)
       throw new HttpException('This table not found.', HttpStatus.BAD_REQUEST);
-    if (status == TABLE_STATUS.SERVING) {
-      if (table.status == TABLE_STATUS.SERVING) {
-        throw new HttpException('This table serving.', HttpStatus.BAD_REQUEST);
-      }
-      return await this.tableRepository.update(
-        {
-          id: tableId,
-        },
-        {
-          status: status,
-        },
-      );
-    }
-    return await this.tableRepository.update(
+    // if (status == TABLE_STATUS.SERVING) {
+    //   if (table.status == TABLE_STATUS.SERVING) {
+    //     throw new HttpException('This table serving.', HttpStatus.BAD_REQUEST);
+    //   }
+    //   return await this.tableRepository.update(
+    //     {
+    //       id: tableId,
+    //     },
+    //     {
+    //       status: status,
+    //     },
+    //   );
+    // }
+    await this.tableRepository.update(
       {
         id: tableId,
       },
@@ -81,10 +81,23 @@ export class TableService {
         status: status,
       },
     );
+    return new HttpException(
+      `Update Table Id ${tableId} successfully`,
+      HttpStatus.OK,
+    );
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} table`;
+  async findOne(id: number) {
+    const table = await this.tableRepository.findOneBy({ id: id });
+    if (table == null) {
+      throw new HttpException('Table not found.', HttpStatus.BAD_REQUEST);
+    }
+    return table;
+  }
+
+  async findByStatus(status: TABLE_STATUS) {
+    const table = await this.tableRepository.findBy({ status: status });
+    return table;
   }
 
   update(id: number, updateTableDto: UpdateTableDto) {

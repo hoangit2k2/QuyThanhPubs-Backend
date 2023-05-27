@@ -23,7 +23,12 @@ export class Table {
   @Column({ name: 'note', length: 200, nullable: false })
   note: string;
 
-  @Column({ name: 'type', default: TABLE_STATUS.SERVING })
+  @Column({
+    name: 'type',
+    type: 'enum',
+    enum: TABLE_STATUS,
+    default: TABLE_STATUS.SERVING,
+  })
   status: TABLE_STATUS;
 
   @ManyToOne(() => Users, (users) => users.username)
