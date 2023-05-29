@@ -99,12 +99,4 @@ export class TableService {
     const table = await this.tableRepository.findBy({ status: status });
     return table;
   }
-
-  update(id: number, updateTableDto: UpdateTableDto) {
-    return `This action updates a #${id} table`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} table`;
-  }
 }

@@ -1,5 +1,5 @@
 import { CreateUsersDto } from './dto/create-accounr.dto';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './users.entity';
 import { Repository } from 'typeorm';
@@ -16,12 +16,22 @@ export class UsersService {
    * @returns {CreateUsersDto} total price
    */
   async create(createUsersDto: CreateUsersDto): Promise<CreateUsersDto> {
+    const user = await this.userRepository.findOneBy({
+      username: createUsersDto.username,
+    });
+    if (user != null) {
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+    }
     const newUser = await this.userRepository.create(createUsersDto);
     return this.userRepository.save(newUser);
   }
 
-  async findAll(): Promise<Users[]> {
-    const users = await this.userRepository.find();
-    return users;
+  async deleteByUsername(username: string): Promise<any> {
+    const user = await this.userRepository.findOneBy({ username: username });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+    }
+    await this.userRepository.softDelete({ username: username });
+    return new HttpException(`User deleted successfully`, HttpStatus.OK);
   }
 }
