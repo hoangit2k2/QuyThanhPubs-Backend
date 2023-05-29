@@ -6,25 +6,32 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Category } from '../category/category.entity';
 import { TableProduct } from '../table_product/table_product.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
+  @ApiProperty()
   id: number;
 
   @Column()
+  @ApiProperty()
   name: string;
 
   @Column()
+  @ApiProperty()
   description: string;
 
   @Column()
+  @ApiProperty()
   price: number;
 
   @Column()
+  @ApiProperty()
   image: string;
 
   @ManyToOne(() => Category, (category) => category.products)
@@ -34,8 +41,14 @@ export class Product {
   tableProducts: TableProduct[];
 
   @CreateDateColumn()
+  @ApiProperty()
   create_at: number;
 
   @DeleteDateColumn()
+  @ApiProperty()
   delete_at: number;
+
+  @UpdateDateColumn()
+  @ApiProperty()
+  update_at: number;
 }
