@@ -25,7 +25,8 @@ export class TableService {
     const user = await this.usersRepository.findOneBy({
       username: createTableDto.user,
     });
-    if (user == null) {
+    console.log(user, createTableDto.user);
+    if (!user) {
       throw new HttpException('Username not found.', HttpStatus.BAD_REQUEST);
     }
     const newTable = await this.tableRepository.create({
