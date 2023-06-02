@@ -30,6 +30,14 @@ export class Product {
   @ApiProperty()
   price: number;
 
+  @Column({ nullable: true })
+  @ApiProperty()
+  unit: string;
+
+  @Column({ nullable: true })
+  @ApiProperty()
+  quantity: number;
+
   @Column()
   @ApiProperty()
   image: string;

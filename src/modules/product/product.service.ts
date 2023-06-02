@@ -1,4 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  PipeTransform,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -6,6 +13,8 @@ import { Product } from './product.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from '../category/category.entity';
+import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class ProductService {
@@ -51,10 +60,11 @@ export class ProductService {
       image: newImg.url,
       price: createProductDto.price,
       category: category,
+      unit: createProductDto.unit,
+      quantity: createProductDto.quantity,
     });
     return await this.productRepository.save(newProduct);
   }
-
   findAll() {
     return `This action returns all product`;
   }
@@ -71,3 +81,25 @@ export class ProductService {
     return `This action removes a #${id} product`;
   }
 }
+
+// export class FormDataValidationPipe implements PipeTransform<CreateProductDto> {
+//   async transform(value: CreateProductDto, metadata: ArgumentMetadata) {
+//     const { metatype } = metadata;
+
+//     if (!metatype || !this.toValidate(metatype)) {
+//       return value;
+//     }
+
+//     const object = plainToClass(metatype, value);
+//     const errors = await validate(object);
+//     if (errors.length > 0) {
+//       throw new BadRequestException('Validation failed');
+//     }
+//     return value;
+//   }
+
+//   private toValidate(metatype: any): boolean {
+//     const types = [String, Boolean, Number, Array, Object];
+//     return !types.includes(metatype);
+//   }
+// }

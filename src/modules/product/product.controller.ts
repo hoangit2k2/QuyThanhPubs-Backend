@@ -33,7 +33,6 @@ export class ProductController {
   @ApiOperation({ summary: 'Upload image to cloudinary' })
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
-  // @ApiConsumes('application/json')
   @ApiBody({
     schema: {
       type: 'object',
@@ -48,6 +47,12 @@ export class ProductController {
           type: 'number',
         },
         categoryId: {
+          type: 'number',
+        },
+        unit: {
+          type: 'string',
+        },
+        quantity: {
           type: 'number',
         },
         file: {
@@ -75,6 +80,7 @@ export class ProductController {
     @UploadedFile() file: Express.Multer.File,
     @Body() createProductDto: CreateProductDto,
   ) {
+    console.log(createProductDto);
     return this.productService.create(createProductDto, file);
   }
 

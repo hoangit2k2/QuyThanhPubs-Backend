@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, MaxLength, Min, MinLength } from 'class-validator';
-import { Category } from 'src/modules/category/category.entity';
+import { IsNotEmpty, IsNumber, MaxLength, MinLength } from 'class-validator';
 
 export class CreateProductDto {
   @ApiProperty()
@@ -16,18 +15,21 @@ export class CreateProductDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsInt()
-  @Min(0)
+  // @IsNumber()
   price: number;
 
   @ApiProperty()
   @MinLength(3)
-  @MaxLength(1000)
-  image: string;
+  @MaxLength(20)
+  unit: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsInt()
-  @Min(0)
+  // @IsNumber()
+  quantity: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  // @IsNumber()
   categoryId: number;
 }

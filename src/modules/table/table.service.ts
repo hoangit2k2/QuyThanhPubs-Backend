@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTableDto } from './dto/create-table.dto';
-import { UpdateTableDto } from './dto/update-table.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Table } from './table.entity';
