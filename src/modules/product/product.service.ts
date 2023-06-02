@@ -65,9 +65,28 @@ export class ProductService {
     });
     return await this.productRepository.save(newProduct);
   }
-  findAll() {
-    return `This action returns all product`;
+  /**
+   * get  all Products
+   * @returns Product
+   */
+  async findByCategory(categoryId: number): Promise<any> {
+    const category = await this.categoryRepository.findOneBy({
+      id: categoryId,
+    });
+    if (!category) {
+      throw new HttpException('Category not found.', HttpStatus.BAD_REQUEST);
+    }
+    const products = await this.productRepository.find();
+    // return products;
+
+    // console.log(products);
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .innerJoinAndSelect('product.category', 'category')
+      .where('category.id = :categoryId', { categoryId: categoryId })
+      .getMany();
   }
+  // retu
 
   findOne(id: number) {
     return `This action returns a #${id} product`;

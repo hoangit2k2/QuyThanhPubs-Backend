@@ -84,10 +84,10 @@ export class ProductController {
     return this.productService.create(createProductDto, file);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.productService.findAll();
-  // }
+  @Get('admin/product/:categoryId')
+  async findAll(@Param('categoryId') categoryId: number) {
+    return await this.productService.findByCategory(categoryId);
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
