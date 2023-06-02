@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -84,8 +85,8 @@ export class ProductController {
     return this.productService.create(createProductDto, file);
   }
 
-  @Get('admin/product/:categoryId')
-  async findAll(@Param('categoryId') categoryId: number) {
+  @Get('admin/product')
+  async findAll(@Query('categoryId') categoryId: number) {
     return await this.productService.findByCategory(categoryId);
   }
 

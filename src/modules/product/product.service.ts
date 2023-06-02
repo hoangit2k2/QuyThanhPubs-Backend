@@ -76,10 +76,12 @@ export class ProductService {
     if (!category) {
       throw new HttpException('Category not found.', HttpStatus.BAD_REQUEST);
     }
-    const products = await this.productRepository.find();
-    // return products;
-
-    // console.log(products);
+    if (categoryId == undefined) {
+      return await this.productRepository
+        .createQueryBuilder('product')
+        .innerJoinAndSelect('product.category', 'category')
+        .getMany();
+    }
     return await this.productRepository
       .createQueryBuilder('product')
       .innerJoinAndSelect('product.category', 'category')
