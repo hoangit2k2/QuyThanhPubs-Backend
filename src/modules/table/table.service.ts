@@ -4,7 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Table } from './table.entity';
 import { Users } from '../users/users.entity';
-import { TABLE_STATUS } from 'src/common/constant';
+import { ORDER_PRODUCT_STATUS, TABLE_STATUS } from 'src/common/constant';
+import { UpdateTableDto } from './dto/update-table.dto';
+import { TableProduct } from '../table_product/table_product.entity';
 
 @Injectable()
 export class TableService {
@@ -14,6 +16,9 @@ export class TableService {
 
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
+
+    @InjectRepository(TableProduct)
+    private tableProductRepository: Repository<TableProduct>,
   ) {}
   /**
    * create a new Table
@@ -24,7 +29,6 @@ export class TableService {
     const user = await this.usersRepository.findOneBy({
       username: createTableDto.user,
     });
-    console.log(user, createTableDto.user);
     if (!user) {
       throw new HttpException('Username not found.', HttpStatus.BAD_REQUEST);
     }
@@ -56,29 +60,37 @@ export class TableService {
    * @Param {status} id Tale
    * @returns {any}
    */
-  async updateStatusTable(tableId: number, status: TABLE_STATUS): Promise<any> {
+  async updateStatusTable(
+    tableId: number,
+    updateTableDto: UpdateTableDto,
+  ): Promise<any> {
     const table = await this.tableRepository.findOneBy({ id: tableId });
-    if (table === null)
+    if (!table)
       throw new HttpException('This table not found.', HttpStatus.BAD_REQUEST);
-    // if (status == TABLE_STATUS.SERVING) {
-    //   if (table.status == TABLE_STATUS.SERVING) {
-    //     throw new HttpException('This table serving.', HttpStatus.BAD_REQUEST);
-    //   }
-    //   return await this.tableRepository.update(
-    //     {
-    //       id: tableId,
-    //     },
-    //     {
-    //       status: status,
-    //     },
-    //   );
-    // }
+    if (
+      updateTableDto.status == TABLE_STATUS.PAID ||
+      updateTableDto.status == TABLE_STATUS.UNPAID
+    ) {
+      const table = await this.tableRepository.findOne({
+        relations: ['tableProducts'],
+        where: {
+          id: tableId,
+        },
+      });
+      for (const tableProduct of table.tableProducts) {
+        if (tableProduct.status == ORDER_PRODUCT_STATUS.NOT_YET_DELIVERED) {
+          throw new HttpException('Table not finished', HttpStatus.BAD_REQUEST);
+        }
+      }
+      console.log(table.tableProducts);
+    }
     await this.tableRepository.update(
       {
         id: tableId,
       },
       {
-        status: status,
+        note: updateTableDto.note,
+        status: updateTableDto.status,
       },
     );
     return new HttpException(

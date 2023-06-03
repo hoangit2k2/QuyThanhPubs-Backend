@@ -86,6 +86,16 @@ export class ProductController {
   }
 
   @Get('admin/product')
+  @ApiOperation({ summary: 'Get all product' })
+  @ApiResponse({
+    description: 'category not found',
+    status: 404,
+  })
+  @ApiResponse({
+    description: 'get product by id successfully',
+    type: Product,
+    status: 200,
+  })
   async findAll(@Query('categoryId') categoryId: number) {
     return await this.productService.findByCategory(categoryId);
   }

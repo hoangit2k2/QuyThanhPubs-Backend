@@ -25,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { TABLE_STATUS } from 'src/common/constant';
 import { Table } from './table.entity';
+import { UpdateTableDto } from './dto/update-table.dto';
 
 @Controller('')
 @ApiTags('table')
@@ -62,7 +63,7 @@ export class TableController {
     return this.tableService.deleteTableById(tableId);
   }
 
-  @Put('admin/table/:tableId/:status')
+  @Put('admin/table/:tableId')
   @ApiOperation({ summary: 'Update Status Table' })
   @ApiCreatedResponse({
     description: ' Update table successfully.',
@@ -71,12 +72,12 @@ export class TableController {
     description: 'Table not found',
   })
   @ApiForbiddenResponse({ description: 'Forbidden.' })
-  @ApiParam({ name: 'status', enum: TABLE_STATUS })
+  // @ApiParam({ name: 'status', enum: TABLE_STATUS })
   update(
     @Param('tableId') tableId: number,
-    @Param('status') status: TABLE_STATUS,
+    @Body() updateTableDto: UpdateTableDto,
   ) {
-    return this.tableService.updateStatusTable(tableId, status);
+    return this.tableService.updateStatusTable(tableId, updateTableDto);
   }
 
   @Get('admin/table/:tableId')
