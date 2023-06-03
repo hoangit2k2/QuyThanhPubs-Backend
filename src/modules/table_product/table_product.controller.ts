@@ -37,21 +37,21 @@ export class TableProductController {
     return this.tableProductService.getByTableId(table_id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tableProductService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.tableProductService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateTableProductDto: UpdateTableProductDto,
-  ) {
-    return this.tableProductService.update(+id, updateTableProductDto);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateTableProductDto: UpdateTableProductDto,
+  // ) {
+  //   return this.tableProductService.update(+id, updateTableProductDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tableProductService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.tableProductService.remove(+id);
+  // }
 }
