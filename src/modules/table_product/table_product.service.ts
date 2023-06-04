@@ -53,12 +53,12 @@ export class TableProductService {
       });
       if (!product)
         throw new HttpException('product not found.', HttpStatus.BAD_REQUEST);
-      if (
-        createTableProductDtos.number ||
-        createTableProductDtos.product_id ||
-        createTableProductDtos.status == null
-      )
-        throw new HttpException('Invalid', HttpStatus.BAD_REQUEST);
+      if (createTableProductDtos.status == null)
+        throw new HttpException('Invalid number.', HttpStatus.BAD_REQUEST);
+      if (createTableProductDtos.number == null)
+        throw new HttpException('Invalid number.', HttpStatus.BAD_REQUEST);
+      if (createTableProductDtos.product_id == null)
+        throw new HttpException('Invalid product_id.', HttpStatus.BAD_REQUEST);
       const newTableProduct = await this.tableProductRepository.create({
         number: createTableProductDtos.number,
         status: createTableProductDtos.status,
