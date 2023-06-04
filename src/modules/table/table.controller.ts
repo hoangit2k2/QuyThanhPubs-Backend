@@ -46,6 +46,7 @@ export class TableController {
   @ApiBody({
     type: CreateTableDto,
   })
+  @UsePipes(new ValidationPipe({ transform: true }))
   create(@Body() createTableDto: CreateTableDto) {
     return this.tableService.create(createTableDto);
   }
@@ -73,6 +74,7 @@ export class TableController {
   })
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   // @ApiParam({ name: 'status', enum: TABLE_STATUS })
+  @UsePipes(new ValidationPipe({ transform: true }))
   update(
     @Param('tableId') tableId: number,
     @Body() updateTableDto: UpdateTableDto,

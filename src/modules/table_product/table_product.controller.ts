@@ -3,13 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { TableProductService } from './table_product.service';
 import { CreateTableProductDto } from './dto/create-table_product.dto';
-import { UpdateTableProductDto } from './dto/update-table_product.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TableProduct } from './table_product.entity';
 
@@ -28,6 +27,7 @@ export class TableProductController {
     status: 200,
   })
   @Post('admin/table_product')
+  @UsePipes(new ValidationPipe({ transform: true }))
   create(@Body() createTableProductDto: CreateTableProductDto) {
     return this.tableProductService.create(createTableProductDto);
   }

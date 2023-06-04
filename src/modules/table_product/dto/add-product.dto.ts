@@ -4,6 +4,7 @@ import { ORDER_PRODUCT_STATUS } from 'src/common/constant';
 
 export class AddProductDto {
   @ApiProperty({ enum: ['not_yet_delivered', 'delivered'] })
+  @IsNotEmpty()
   @IsEnum(ORDER_PRODUCT_STATUS)
   status: ORDER_PRODUCT_STATUS;
 

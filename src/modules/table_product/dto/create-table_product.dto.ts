@@ -10,6 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { AddProductDto } from './add-product.dto';
+import { ORDER_PRODUCT_STATUS } from 'src/common/constant';
 
 export class CreateTableProductDto {
   @ApiProperty()
@@ -33,5 +34,31 @@ export class CreateTableProductDto {
   @IsNumber()
   number: number;
 
+  @ApiProperty()
+  @IsNotEmpty()
   addProductDto: AddProductDto[];
+}
+export class AddProductsForTableDto {
+  @ApiProperty({ enum: ['not_yet_delivered', 'delivered'] })
+  @IsNotEmpty()
+  @IsEnum(ORDER_PRODUCT_STATUS)
+  status: ORDER_PRODUCT_STATUS;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @Min(0)
+  product_id: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @Min(0)
+  number: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @Min(0)
+  table_id: number;
 }

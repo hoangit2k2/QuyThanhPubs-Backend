@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateTableProductDto } from './dto/create-table_product.dto';
+import { CreateTableProductDto, AddProductsForTableDto } from './dto/create-table_product.dto';
 import { UpdateTableProductDto } from './dto/update-table_product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TableProduct } from './table_product.entity';
@@ -50,7 +50,12 @@ export class TableProductService {
       });
       if (!product)
         throw new HttpException('product not found.', HttpStatus.BAD_REQUEST);
-
+      if (
+        createTableProductDtos.number ||
+        createTableProductDtos.product_id ||
+        createTableProductDtos.status == null
+      )
+        throw new HttpException('Invalid', HttpStatus.BAD_REQUEST);
       const newTableProduct = await this.tableProductRepository.create({
         number: createTableProductDtos.number,
         status: createTableProductDtos.status,
@@ -76,9 +81,11 @@ export class TableProductService {
     return table.tableProducts;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tableProduct`;
-  }
+  // addProduct(add: AddProductsForTableDto[]) {
+  //   for(const addProduct of add){
+  //     const product = 
+  //   }
+  // }
 
   update(id: number, updateTableProductDto: UpdateTableProductDto) {
     return `This action updates a #${id} tableProduct`;

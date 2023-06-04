@@ -108,7 +108,22 @@ export class TableService {
   }
 
   async findByStatus(status: TABLE_STATUS) {
-    const table = await this.tableRepository.findBy({ status: status });
+    const table = await this.tableRepository
+      .createQueryBuilder('table')
+      .where('table.status = :status', {
+        status: status,
+      })
+      .orderBy('table.createAt', 'DESC')
+      .getMany();
+    // const table = await this.tableRepository.find({
+    //   order: { createAt: 'DESC' },
+    // });
+    // const listTable = [];
+    // for (const tables of table) {
+    //   if (tables.status === status) {
+    //     listTable.push(tables);
+    //   }
+    // }
     return table;
   }
 }
