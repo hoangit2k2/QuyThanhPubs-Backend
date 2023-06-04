@@ -6,7 +6,7 @@ import * as cors from 'cors';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const corsOptions: CorsOptions = {
-    origin: 'https://quythanh-zlii.onrender.com',
+    origin: ['https://quythanh-zlii.onrender.com', 'http://localhost:4200'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   };
