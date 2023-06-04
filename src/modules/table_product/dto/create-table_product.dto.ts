@@ -29,14 +29,8 @@ export class CreateTableProductDto {
   user: string;
 
   @ApiProperty()
-  @Min(0)
-  @Max(100)
-  @IsNumber()
-  number: number;
-
-  @ApiProperty()
   @IsNotEmpty()
-  orderedProducts: AddProductDto[];
+  addProductDto: AddProductDto[];
 }
 export class AddProductsForTableDto {
   @ApiProperty({ enum: ['not_yet_delivered', 'delivered'] })
