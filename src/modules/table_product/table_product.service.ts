@@ -68,7 +68,7 @@ export class TableProductService {
       await this.tableProductRepository.save(newTableProduct);
     }
 
-    return new HttpException(`successfully created.`, HttpStatus.OK);
+    return newTable;
   }
 
   async getByTableId(tableId: number) {

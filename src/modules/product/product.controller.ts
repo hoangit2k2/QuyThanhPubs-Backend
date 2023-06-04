@@ -11,10 +11,12 @@ import {
   UsePipes,
   ValidationPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiForbiddenResponse,
@@ -24,7 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './product.entity';
-
+import { AuthGuard } from '../auth/auth.guard';
 @Controller('')
 @ApiTags('Product')
 export class ProductController {
@@ -85,6 +87,8 @@ export class ProductController {
     return this.productService.create(createProductDto, file);
   }
 
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard)
   @Get('admin/product')
   @ApiOperation({ summary: 'Get all product' })
   @ApiResponse({
@@ -96,22 +100,24 @@ export class ProductController {
     type: Product,
     status: 200,
   })
+  @ApiForbiddenResponse({ description: 'forbidden' })
   async findAll(@Query('categoryId') categoryId: number) {
     return await this.productService.findByCategory(categoryId);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.productService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-  //   return this.productService.update(+id, updateProductDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.productService.remove(+id);
-  // }
+  @Get('admin/product/name')
+  @ApiOperation({ summary: 'Get all product' })
+  @ApiResponse({
+    description: 'category not found',
+    status: 404,
+  })
+  @ApiResponse({
+    description: 'get product by id successfully',
+    type: Product,
+    status: 200,
+  })
+  @ApiForbiddenResponse({ description: 'forbidden' })
+  getByName(@Query('name') name: string) {
+    return this.productService.findbyname(name);
+  }
 }

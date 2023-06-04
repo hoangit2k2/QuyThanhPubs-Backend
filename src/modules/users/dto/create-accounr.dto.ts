@@ -3,10 +3,12 @@ import {
   IsEnum,
   IsNotEmpty,
   IsString,
+  Length,
+  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { ROLE } from 'src/common/constant';
+import { MESSAGES, REGEX, ROLE } from 'src/common/constant';
 
 export class CreateUsersDto {
   @ApiProperty()
@@ -16,11 +18,13 @@ export class CreateUsersDto {
   @IsNotEmpty()
   username: string;
 
-  @ApiProperty()
-  @IsString()
-  @MinLength(5)
-  @MaxLength(50)
+  @ApiProperty({
+    description: 'The password of the User',
+    example: 'Password@123',
+  })
   @IsNotEmpty()
+  @Length(8, 24)
+  @Matches(REGEX.PASSWORD_RULE, { message: MESSAGES.PASSWORD_RULE_MESSAGE })
   password: string;
 
   @ApiProperty({ enum: ['admin', 'staff'] })

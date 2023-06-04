@@ -10,7 +10,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { Product } from './product.entity';
-import { Repository } from 'typeorm';
+import { ILike, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from '../category/category.entity';
 import { plainToClass } from 'class-transformer';
@@ -90,8 +90,23 @@ export class ProductService {
   }
   // retu
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  /**
+   * serch product by name
+   * @query name string
+   * return Product object
+   */
+  async findbyname(name: string): Promise<Product[]> {
+    // const product = await this.productRepository
+    //   .createQueryBuilder('product')
+    //   .where('product.name like :name', { name: `%${name}%` })
+    //   .getMany();
+    // return product;
+    const product = await this.productRepository.find({
+      where: {
+        name: ILike(`%${name}%`),
+      },
+    });
+    return product;
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
