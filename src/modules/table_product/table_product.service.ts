@@ -47,7 +47,7 @@ export class TableProductService {
     });
     await this.tableRepository.save(newTable);
 
-    for (const createTableProductDtos of createTableProductDto.orderedProducts) {
+    for (const createTableProductDtos of createTableProductDto.addProductDto) {
       const product = await this.productRepository.findOneBy({
         id: createTableProductDtos.product_id,
       });
