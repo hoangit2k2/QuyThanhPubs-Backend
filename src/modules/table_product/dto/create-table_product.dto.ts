@@ -36,7 +36,7 @@ export class CreateTableProductDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  addProductDto: AddProductDto[];
+  orderedProducts: AddProductDto[];
 }
 export class AddProductsForTableDto {
   @ApiProperty({ enum: ['not_yet_delivered', 'delivered'] })

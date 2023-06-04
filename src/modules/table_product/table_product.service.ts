@@ -1,5 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateTableProductDto, AddProductsForTableDto } from './dto/create-table_product.dto';
+import {
+  CreateTableProductDto,
+  AddProductsForTableDto,
+} from './dto/create-table_product.dto';
 import { UpdateTableProductDto } from './dto/update-table_product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TableProduct } from './table_product.entity';
@@ -44,7 +47,7 @@ export class TableProductService {
     });
     await this.tableRepository.save(newTable);
 
-    for (const createTableProductDtos of createTableProductDto.addProductDto) {
+    for (const createTableProductDtos of createTableProductDto.orderedProducts) {
       const product = await this.productRepository.findOneBy({
         id: createTableProductDtos.product_id,
       });
@@ -83,7 +86,7 @@ export class TableProductService {
 
   // addProduct(add: AddProductsForTableDto[]) {
   //   for(const addProduct of add){
-  //     const product = 
+  //     const product =
   //   }
   // }
 
