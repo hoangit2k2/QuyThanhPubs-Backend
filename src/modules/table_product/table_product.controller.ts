@@ -6,13 +6,22 @@ import {
   Param,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { TableProductService } from './table_product.service';
 import { CreateTableProductDto } from './dto/create-table_product.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { TableProduct } from './table_product.entity';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @ApiTags('Table-Product')
 export class TableProductController {
   constructor(private readonly tableProductService: TableProductService) {}

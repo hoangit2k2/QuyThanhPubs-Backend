@@ -10,11 +10,13 @@ import {
   Put,
   Get,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TableService } from './table.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -26,8 +28,11 @@ import {
 import { TABLE_STATUS } from 'src/common/constant';
 import { Table } from './table.entity';
 import { UpdateTableDto } from './dto/update-table.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @ApiTags('table')
 export class TableController {
   constructor(private readonly tableService: TableService) {}
@@ -92,7 +97,7 @@ export class TableController {
     description: 'Table not found',
   })
   @ApiForbiddenResponse({ description: 'Forbidden.' })
-  getTableById(@Param('tableId') tableId: number): Promise<Table> {
+  getTableById(@Param('tableId') tableId: number) {
     return this.tableService.findOne(tableId);
   }
 

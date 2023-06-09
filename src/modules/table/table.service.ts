@@ -100,7 +100,12 @@ export class TableService {
   }
 
   async findOne(id: number) {
-    const table = await this.tableRepository.findOneBy({ id: id });
+    const table = await this.tableRepository.find({
+      relations: ['tableProducts', 'tableProducts.product'],
+      where: {
+        id: id,
+      },
+    });
     if (table == null) {
       throw new HttpException('Table not found.', HttpStatus.BAD_REQUEST);
     }

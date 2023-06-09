@@ -28,6 +28,8 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './product.entity';
 import { AuthGuard } from '../auth/auth.guard';
 @Controller('')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @ApiTags('Product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -87,8 +89,6 @@ export class ProductController {
     return this.productService.create(createProductDto, file);
   }
 
-  // @ApiBearerAuth()
-  // @UseGuards(AuthGuard)
   @Get('admin/product')
   @ApiOperation({ summary: 'Get all product' })
   @ApiResponse({

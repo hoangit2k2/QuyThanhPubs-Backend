@@ -8,11 +8,13 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOperation,
@@ -21,8 +23,11 @@ import {
 } from '@nestjs/swagger';
 import { Category } from './category.entity';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @ApiTags('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
