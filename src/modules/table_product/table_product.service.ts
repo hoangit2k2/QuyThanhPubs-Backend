@@ -1,15 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import {
-  CreateTableProductDto,
-  AddProductsForTableDto,
-} from './dto/create-table_product.dto';
+import { CreateTableProductDto } from './dto/create-table_product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TableProduct } from './table_product.entity';
 import { Repository } from 'typeorm';
 import { Product } from '../product/product.entity';
-import { TABLE_STATUS } from 'src/common/constant';
 import { Users } from '../users/users.entity';
 import { Table } from '../table/table.entity';
+import { UpdateTableProductDto } from './dto/update-table_product.dto';
+import { AddNewProductDto, AddProductDto } from './dto/add-product.dto';
+import { ORDER_PRODUCT_STATUS } from 'src/common/constant';
 
 @Injectable()
 export class TableProductService {
@@ -54,20 +53,25 @@ export class TableProductService {
         throw new HttpException('product not found.', HttpStatus.BAD_REQUEST);
       if (createTableProductDtos.status == null)
         throw new HttpException('Invalid number.', HttpStatus.BAD_REQUEST);
-      if (createTableProductDtos.number == null)
+      if (createTableProductDtos.quantity == null)
         throw new HttpException('Invalid number.', HttpStatus.BAD_REQUEST);
       if (createTableProductDtos.product_id == null)
         throw new HttpException('Invalid product_id.', HttpStatus.BAD_REQUEST);
       const newTableProduct = await this.tableProductRepository.create({
-        number: createTableProductDtos.number,
+        quantity: createTableProductDtos.quantity,
         status: createTableProductDtos.status,
         table: newTable,
         product: product,
       });
       await this.tableProductRepository.save(newTableProduct);
     }
-
-    return newTable;
+    const table = await this.tableRepository.findOne({
+      relations: ['tableProducts', 'tableProducts.product'],
+      where: {
+        id: newTable.id,
+      },
+    });
+    return table;
   }
 
   async getByTableId(tableId: number) {
@@ -83,12 +87,6 @@ export class TableProductService {
     return table;
   }
 
-  // addProduct(add: AddProductsForTableDto[]) {
-  //   for(const addProduct of add){
-  //     const product =
-  //   }
-  // }
-
   /**
    *
    * @param id
@@ -96,34 +94,73 @@ export class TableProductService {
    * @param updateTableProductDto
    * @returns
    */
-  async update(id: number, addProductsForTableDto: AddProductsForTableDto) {
-    const table = await this.tableRepository.findOneBy({
-      id: addProductsForTableDto.table_id,
+  async update(id: number, updateTableProductDto: UpdateTableProductDto) {
+    const table_product = await this.tableProductRepository.findOneBy({
+      id: id,
     });
-    const product = await this.productRepository.findOneBy({
-      id: addProductsForTableDto.product_id,
-    });
-    if (!table) {
-      throw new HttpException('Table not found', HttpStatus.BAD_REQUEST);
-    }
-    if (!product) {
-      throw new HttpException('Product not found', HttpStatus.BAD_REQUEST);
+    if (!table_product) {
+      throw new HttpException(
+        'Table product not found',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     await this.tableProductRepository.update(
       {
         id: id,
       },
       {
-        number: addProductsForTableDto.number,
-        table: table,
-        product: product,
-        status: addProductsForTableDto.status,
+        quantity: updateTableProductDto.quantity,
+        status: updateTableProductDto.status,
       },
     );
     return new HttpException('Upload table successfully', HttpStatus.OK);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tableProduct`;
+  /**
+   * Add product to table
+   * @Param tableId
+   * @Body add-productDto
+   * return new table product
+   */
+  async addProductForTable(
+    tableId: number,
+    addNewProductDto: AddNewProductDto,
+  ) {
+    const table = await this.tableRepository.findOneBy({ id: tableId });
+    const product = await this.productRepository.findOneBy({
+      id: addNewProductDto.product_id,
+    });
+    if (!table) {
+      throw new HttpException('Table not found.', HttpStatus.BAD_REQUEST);
+    }
+    if (!product) {
+      throw new HttpException('Product not found.', HttpStatus.BAD_REQUEST);
+    }
+    const newTableProduct = await this.tableProductRepository.create({
+      product: product,
+      table: table,
+      status: ORDER_PRODUCT_STATUS.NOT_YET_DELIVERED,
+      quantity: addNewProductDto.quantity,
+    });
+    await this.tableProductRepository.save(newTableProduct);
+    return newTableProduct;
+  }
+
+  /**
+   * Delete Table Product
+   * @param taleProductId
+   * @return
+   */
+  async deleteTableProduct(tableProductId: number): Promise<any> {
+    const tableProduct = await this.tableProductRepository.findOneBy({
+      id: tableProductId,
+    });
+    if (!tableProduct) {
+      throw new HttpException(
+        'Table product not found.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.tableProductRepository.delete({ id: tableProductId });
   }
 }

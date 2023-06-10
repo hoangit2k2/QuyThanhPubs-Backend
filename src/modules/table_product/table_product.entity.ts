@@ -9,9 +9,9 @@ export class TableProduct {
   id: number;
 
   @Column({
-    name: 'number',
+    name: 'quantity',
   })
-  number: number;
+  quantity: number;
 
   @Column()
   status: ORDER_PRODUCT_STATUS;

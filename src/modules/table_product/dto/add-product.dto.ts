@@ -18,5 +18,19 @@ export class AddProductDto {
   @IsNotEmpty()
   @IsInt()
   @Min(0)
-  number: number;
+  quantity: number;
+}
+
+export class AddNewProductDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @Min(0)
+  product_id: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @Min(0)
+  quantity: number;
 }

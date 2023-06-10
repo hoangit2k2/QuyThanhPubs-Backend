@@ -48,7 +48,7 @@ export class AddProductsForTableDto {
   @IsNotEmpty()
   @IsInt()
   @Min(0)
-  number: number;
+  quantity: number;
 
   @ApiProperty()
   @IsNotEmpty()
