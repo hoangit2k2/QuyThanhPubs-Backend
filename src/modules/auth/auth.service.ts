@@ -15,7 +15,7 @@ export class AuthService {
 
   async signIn(signInDto: SignInDto) {
     const user = await this.userRepository.findOneBy({
-      username: signInDto.usernames,
+      username: signInDto.username,
     });
     if (!(await bcrypt.compare(signInDto.password, user.password)))
       throw new UnauthorizedException();

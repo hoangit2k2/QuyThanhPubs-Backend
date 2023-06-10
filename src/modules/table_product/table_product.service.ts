@@ -3,7 +3,6 @@ import {
   CreateTableProductDto,
   AddProductsForTableDto,
 } from './dto/create-table_product.dto';
-import { UpdateTableProductDto } from './dto/update-table_product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TableProduct } from './table_product.entity';
 import { Repository } from 'typeorm';
@@ -72,8 +71,8 @@ export class TableProductService {
   }
 
   async getByTableId(tableId: number) {
-    const table = await this.tableRepository.findOne({
-      relations: ['tableProducts'],
+    const table = await this.tableProductRepository.findOne({
+      relations: ['table', 'product'],
       where: {
         id: tableId,
       },
@@ -81,7 +80,7 @@ export class TableProductService {
     if (!table) {
       throw new HttpException('Table not found', HttpStatus.BAD_REQUEST);
     }
-    return table.tableProducts;
+    return table;
   }
 
   // addProduct(add: AddProductsForTableDto[]) {
@@ -90,8 +89,38 @@ export class TableProductService {
   //   }
   // }
 
-  update(id: number, updateTableProductDto: UpdateTableProductDto) {
-    return `This action updates a #${id} tableProduct`;
+  /**
+   *
+   * @param id
+   * @body updateTableProductDto
+   * @param updateTableProductDto
+   * @returns
+   */
+  async update(id: number, addProductsForTableDto: AddProductsForTableDto) {
+    const table = await this.tableRepository.findOneBy({
+      id: addProductsForTableDto.table_id,
+    });
+    const product = await this.productRepository.findOneBy({
+      id: addProductsForTableDto.product_id,
+    });
+    if (!table) {
+      throw new HttpException('Table not found', HttpStatus.BAD_REQUEST);
+    }
+    if (!product) {
+      throw new HttpException('Product not found', HttpStatus.BAD_REQUEST);
+    }
+    await this.tableProductRepository.update(
+      {
+        id: id,
+      },
+      {
+        number: addProductsForTableDto.number,
+        table: table,
+        product: product,
+        status: addProductsForTableDto.status,
+      },
+    );
+    return new HttpException('Upload table successfully', HttpStatus.OK);
   }
 
   remove(id: number) {

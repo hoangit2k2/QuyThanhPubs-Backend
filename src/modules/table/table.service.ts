@@ -100,7 +100,7 @@ export class TableService {
   }
 
   async findOne(id: number) {
-    const table = await this.tableRepository.find({
+    const table = await this.tableRepository.findOne({
       relations: ['tableProducts', 'tableProducts.product'],
       where: {
         id: id,

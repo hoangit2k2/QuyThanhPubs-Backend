@@ -7,9 +7,13 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { TableProductService } from './table_product.service';
-import { CreateTableProductDto } from './dto/create-table_product.dto';
+import {
+  AddProductsForTableDto,
+  CreateTableProductDto,
+} from './dto/create-table_product.dto';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -46,21 +50,24 @@ export class TableProductController {
     return this.tableProductService.getByTableId(table_id);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.tableProductService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(
-  //   @Param('id') id: string,
-  //   @Body() updateTableProductDto: UpdateTableProductDto,
-  // ) {
-  //   return this.tableProductService.update(+id, updateTableProductDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.tableProductService.remove(+id);
-  // }
+  @ApiOperation({ summary: 'Create a new table product' })
+  @ApiResponse({
+    description: 'product not found.',
+    status: 404,
+  })
+  @ApiResponse({
+    description: 'create a new table product successfully.',
+    type: TableProduct,
+    status: 200,
+  })
+  @Put('admin/table_product/:tableProductId')
+  update(
+    @Param('tableProductId') tableProductId: number,
+    @Body() addProductsForTableDto: AddProductsForTableDto,
+  ) {
+    return this.tableProductService.update(
+      tableProductId,
+      addProductsForTableDto,
+    );
+  }
 }
