@@ -1,3 +1,4 @@
+import { DeleteTableProduct } from './dto/delete-product.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTableProductDto } from './dto/create-table_product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -94,25 +95,27 @@ export class TableProductService {
    * @param updateTableProductDto
    * @returns
    */
-  async update(id: number, updateTableProductDto: UpdateTableProductDto) {
-    const table_product = await this.tableProductRepository.findOneBy({
-      id: id,
-    });
-    if (!table_product) {
-      throw new HttpException(
-        'Table product not found',
-        HttpStatus.BAD_REQUEST,
+  async update(id: number, updateTableProductDtos: UpdateTableProductDto[]) {
+    for (const updateTableProduct of updateTableProductDtos) {
+      const table_product = await this.tableProductRepository.findOneBy({
+        id: id,
+      });
+      if (!table_product) {
+        throw new HttpException(
+          'Table product not found',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      await this.tableProductRepository.update(
+        {
+          id: id,
+        },
+        {
+          quantity: updateTableProduct.quantity,
+          status: updateTableProduct.status,
+        },
       );
     }
-    await this.tableProductRepository.update(
-      {
-        id: id,
-      },
-      {
-        quantity: updateTableProductDto.quantity,
-        status: updateTableProductDto.status,
-      },
-    );
     return new HttpException('Upload table successfully', HttpStatus.OK);
   }
 
@@ -124,26 +127,58 @@ export class TableProductService {
    */
   async addProductForTable(
     tableId: number,
-    addNewProductDto: AddNewProductDto,
+    addNewProductDtos: AddNewProductDto[],
   ) {
-    const table = await this.tableRepository.findOneBy({ id: tableId });
-    const product = await this.productRepository.findOneBy({
-      id: addNewProductDto.product_id,
-    });
-    if (!table) {
-      throw new HttpException('Table not found.', HttpStatus.BAD_REQUEST);
+    const result = [];
+    for (const addNewProductDto of addNewProductDtos) {
+      const product = await this.productRepository.findOneBy({
+        id: addNewProductDto.product_id,
+      });
+      const table = await this.tableRepository.findOneBy({
+        id: tableId,
+      });
+      if (!table) {
+        throw new HttpException(
+          'ban nay khong ton tai ok.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      if (!product) {
+        throw new HttpException(
+          'san pham nay khong ton tai ok.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const newProductTable = await this.tableProductRepository.create({
+        product: product,
+        table: table,
+        quantity: addNewProductDto.quantity,
+        status: ORDER_PRODUCT_STATUS.NOT_YET_DELIVERED,
+      });
+      await this.tableProductRepository.save(newProductTable);
+      result.push(newProductTable);
     }
-    if (!product) {
-      throw new HttpException('Product not found.', HttpStatus.BAD_REQUEST);
-    }
-    const newTableProduct = await this.tableProductRepository.create({
-      product: product,
-      table: table,
-      status: ORDER_PRODUCT_STATUS.NOT_YET_DELIVERED,
-      quantity: addNewProductDto.quantity,
-    });
-    await this.tableProductRepository.save(newTableProduct);
-    return newTableProduct;
+    return result;
+    // const tableProducts = await this.tableProductRepository
+    //   .createQueryBuilder('tableProduct')
+    //   .leftJoinAndSelect('tableProduct.table', 'table')
+    //   .leftJoinAndSelect('tableProduct.product', 'product')
+    //   .where('table.id = :tableId', { tableId: tableId })
+    //   .getMany();
+    // for (const tableProduct of tableProducts) {
+    //   for (const product of addNewProductDto) {
+    //     if (tableProduct.product.id == product.product_id) {
+    //       await this.tableProductRepository.update(
+    //         {
+    //           id: tableProduct.id,
+    //         },
+    //         {
+    //           quantity: tableProduct.quantity + product.quantity,
+    //         },
+    //       );
+    //     }
+    //   }
+    // }
   }
 
   /**
@@ -151,16 +186,23 @@ export class TableProductService {
    * @param taleProductId
    * @return
    */
-  async deleteTableProduct(tableProductId: number): Promise<any> {
-    const tableProduct = await this.tableProductRepository.findOneBy({
-      id: tableProductId,
-    });
-    if (!tableProduct) {
-      throw new HttpException(
-        'Table product not found.',
-        HttpStatus.BAD_REQUEST,
-      );
+  async deleteTableProduct(
+    tableProductIds: DeleteTableProduct[],
+  ): Promise<any> {
+    for (const tableProductId of tableProductIds) {
+      const tableProduct = await this.tableProductRepository.findOneBy({
+        id: tableProductId.idTableProduct,
+      });
+      if (!tableProduct) {
+        throw new HttpException(
+          'Table product not found.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      await this.tableProductRepository.delete({
+        id: tableProductId.idTableProduct,
+      });
     }
-    await this.tableProductRepository.delete({ id: tableProductId });
+    return new HttpException('Delete successful.', HttpStatus.OK);
   }
 }

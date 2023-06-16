@@ -21,6 +21,7 @@ import { TableProduct } from './table_product.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import { UpdateTableProductDto } from './dto/update-table_product.dto';
 import { AddNewProductDto } from './dto/add-product.dto';
+import { DeleteTableProduct } from './dto/delete-product.dto';
 
 @Controller('')
 @ApiBearerAuth()
@@ -63,7 +64,7 @@ export class TableProductController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async update(
     @Param('tableProductId') tableProductId: number,
-    @Body() updateTableProductDto: UpdateTableProductDto,
+    @Body() updateTableProductDto: UpdateTableProductDto[],
   ) {
     return await this.tableProductService.update(
       tableProductId,
@@ -81,11 +82,11 @@ export class TableProductController {
     type: TableProduct,
     status: 200,
   })
-  @UsePipes(new ValidationPipe({ transform: true }))
   @Post('admin/tableProduct/addProduct/:tableId')
+  @UsePipes(new ValidationPipe({ transform: true }))
   addProductForTable(
     @Param('tableId') tableId: number,
-    @Body() addNewProductDto: AddNewProductDto,
+    @Body() addNewProductDto: AddNewProductDto[],
   ) {
     return this.tableProductService.addProductForTable(
       tableId,
@@ -93,7 +94,7 @@ export class TableProductController {
     );
   }
 
-  @ApiOperation({ summary: 'add product for table' })
+  @ApiOperation({ summary: 'delete product in table' })
   @ApiResponse({
     description: 'product not found.',
     status: 404,
@@ -104,8 +105,8 @@ export class TableProductController {
     status: 200,
   })
   @UsePipes(new ValidationPipe({ transform: true }))
-  @Delete('admin/tableProduct/:tableProductId')
-  deleteTabeleProduct(@Param('tableProductId') tableProductId: number) {
+  @Delete('admin/tableProduct')
+  deleteTableProduct(@Body() tableProductId: DeleteTableProduct[]) {
     return this.tableProductService.deleteTableProduct(tableProductId);
   }
 }
