@@ -13,4 +13,10 @@ export class UpdateTableProductDto {
   @IsInt()
   @Min(0)
   quantity: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @Min(0)
+  tableProductId: number;
 }

@@ -13,6 +13,7 @@ import { TableProductService } from './table_product.service';
 import { CreateTableProductDto } from './dto/create-table_product.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -60,16 +61,16 @@ export class TableProductController {
     type: TableProduct,
     status: 200,
   })
+  @ApiBody({
+    type: [UpdateTableProductDto],
+  })
   @Put('admin/tableProduct/:tableProductId')
   @UsePipes(new ValidationPipe({ transform: true }))
   async update(
-    @Param('tableProductId') tableProductId: number,
+    // @Param('tableProductId') tableProductId: number,
     @Body() updateTableProductDto: UpdateTableProductDto[],
   ) {
-    return await this.tableProductService.update(
-      tableProductId,
-      updateTableProductDto,
-    );
+    return await this.tableProductService.update(updateTableProductDto);
   }
 
   @ApiOperation({ summary: 'add product for table' })
@@ -82,6 +83,7 @@ export class TableProductController {
     type: TableProduct,
     status: 200,
   })
+  @ApiBody({ type: [AddNewProductDto] })
   @Post('admin/tableProduct/addProduct/:tableId')
   @UsePipes(new ValidationPipe({ transform: true }))
   addProductForTable(
@@ -103,6 +105,9 @@ export class TableProductController {
     description: 'create a new table product successfully.',
     type: TableProduct,
     status: 200,
+  })
+  @ApiBody({
+    type: [DeleteTableProduct],
   })
   @UsePipes(new ValidationPipe({ transform: true }))
   @Delete('admin/tableProduct')

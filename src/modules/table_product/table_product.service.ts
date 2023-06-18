@@ -95,10 +95,10 @@ export class TableProductService {
    * @param updateTableProductDto
    * @returns
    */
-  async update(id: number, updateTableProductDtos: UpdateTableProductDto[]) {
+  async update(updateTableProductDtos: UpdateTableProductDto[]) {
     for (const updateTableProduct of updateTableProductDtos) {
       const table_product = await this.tableProductRepository.findOneBy({
-        id: id,
+        id: updateTableProduct.tableProductId,
       });
       if (!table_product) {
         throw new HttpException(
@@ -108,7 +108,7 @@ export class TableProductService {
       }
       await this.tableProductRepository.update(
         {
-          id: id,
+          id: updateTableProduct.tableProductId,
         },
         {
           quantity: updateTableProduct.quantity,

@@ -34,8 +34,8 @@ export class AddNewProductDto {
   @Min(0)
   quantity: number;
 
-  @ApiProperty({ enum: ['not_yet_delivered', 'delivered'] })
-  @IsNotEmpty()
-  @IsEnum(ORDER_PRODUCT_STATUS)
-  status: ORDER_PRODUCT_STATUS;
+  // @ApiProperty({ enum: ['not_yet_delivered', 'delivered'] })
+  // @IsNotEmpty()
+  // @IsEnum(ORDER_PRODUCT_STATUS)
+  // status: ORDER_PRODUCT_STATUS;
 }
