@@ -64,7 +64,7 @@ export class TableProductController {
   @ApiBody({
     type: [UpdateTableProductDto],
   })
-  @Put('admin/tableProduct/:tableProductId')
+  @Put('admin/tableProduct')
   @UsePipes(new ValidationPipe({ transform: true }))
   async update(
     // @Param('tableProductId') tableProductId: number,
