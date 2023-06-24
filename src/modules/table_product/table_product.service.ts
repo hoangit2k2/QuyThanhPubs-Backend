@@ -1,4 +1,3 @@
-import { DeleteTableProduct } from './dto/delete-product.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTableProductDto } from './dto/create-table_product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,9 +6,8 @@ import { Repository } from 'typeorm';
 import { Product } from '../product/product.entity';
 import { Users } from '../users/users.entity';
 import { Table } from '../table/table.entity';
-import { UpdateTableProductDto } from './dto/update-table_product.dto';
-import { AddNewProductDto, AddProductDto } from './dto/add-product.dto';
-import { ORDER_PRODUCT_STATUS } from 'src/common/constant';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { UpdateApiOptions } from 'cloudinary';
 
 @Injectable()
 export class TableProductService {
@@ -89,120 +87,88 @@ export class TableProductService {
   }
 
   /**
-   *
-   * @param id
-   * @body updateTableProductDto
-   * @param updateTableProductDto
-   * @returns
+   * update Product in table
+   * @body UpdateProductDto
    */
-  async update(updateTableProductDtos: UpdateTableProductDto[]) {
-    for (const updateTableProduct of updateTableProductDtos) {
-      const table_product = await this.tableProductRepository.findOneBy({
-        id: updateTableProduct.tableProductId,
-      });
-      if (!table_product) {
-        throw new HttpException(
-          'Table product not found',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      await this.tableProductRepository.update(
-        {
-          id: updateTableProduct.tableProductId,
-        },
-        {
-          quantity: updateTableProduct.quantity,
-          status: updateTableProduct.status,
-        },
-      );
-    }
-    return new HttpException('Upload table successfully', HttpStatus.OK);
-  }
-
-  /**
-   * Add product to table
-   * @Param tableId
-   * @Body add-productDto
-   * return new table product
-   */
-  async addProductForTable(
+  async updateProductInTable(
     tableId: number,
-    addNewProductDtos: AddNewProductDto[],
+    updateProductDtos: UpdateProductDto[],
   ) {
-    const result = [];
-    for (const addNewProductDto of addNewProductDtos) {
-      const product = await this.productRepository.findOneBy({
-        id: addNewProductDto.product_id,
-      });
+    const listProductNew = [];
+    const listProductOld = [];
+    for (const updateProductDto of updateProductDtos) {
+      listProductNew.push(updateProductDto.product_id);
       const table = await this.tableRepository.findOneBy({
         id: tableId,
       });
       if (!table) {
         throw new HttpException(
-          'ban nay khong ton tai ok.',
+          `Id ban ${updateProductDto.product_id} khong ton tai`,
           HttpStatus.BAD_REQUEST,
         );
       }
+      const product = await this.productRepository.findOneBy({
+        id: updateProductDto.product_id,
+      });
       if (!product) {
         throw new HttpException(
-          'san pham nay khong ton tai ok.',
+          `Id san pham ${updateProductDto.product_id} khong ton tai`,
           HttpStatus.BAD_REQUEST,
         );
       }
-      const newProductTable = await this.tableProductRepository.create({
-        product: product,
-        table: table,
-        quantity: addNewProductDto.quantity,
-        status: ORDER_PRODUCT_STATUS.NOT_YET_DELIVERED,
-      });
-      await this.tableProductRepository.save(newProductTable);
-      result.push(newProductTable);
-    }
-    return result;
-    // const tableProducts = await this.tableProductRepository
-    //   .createQueryBuilder('tableProduct')
-    //   .leftJoinAndSelect('tableProduct.table', 'table')
-    //   .leftJoinAndSelect('tableProduct.product', 'product')
-    //   .where('table.id = :tableId', { tableId: tableId })
-    //   .getMany();
-    // for (const tableProduct of tableProducts) {
-    //   for (const product of addNewProductDto) {
-    //     if (tableProduct.product.id == product.product_id) {
-    //       await this.tableProductRepository.update(
-    //         {
-    //           id: tableProduct.id,
-    //         },
-    //         {
-    //           quantity: tableProduct.quantity + product.quantity,
-    //         },
-    //       );
-    //     }
-    //   }
-    // }
-  }
-
-  /**
-   * Delete Table Product
-   * @param taleProductId
-   * @return
-   */
-  async deleteTableProduct(
-    tableProductIds: DeleteTableProduct[],
-  ): Promise<any> {
-    for (const tableProductId of tableProductIds) {
-      const tableProduct = await this.tableProductRepository.findOneBy({
-        id: tableProductId.idTableProduct,
-      });
+      const tableProduct = await this.tableProductRepository
+        .createQueryBuilder('tableProduct')
+        .innerJoin('tableProduct.table', 'table')
+        .innerJoin('tableProduct.product', 'product')
+        .where('product.id = :productId', {
+          productId: updateProductDto.product_id,
+        })
+        .andWhere('table.id = :tableId', { tableId: tableId })
+        .getOne();
       if (!tableProduct) {
-        throw new HttpException(
-          'Table product not found.',
-          HttpStatus.BAD_REQUEST,
-        );
+        const tableProductNew = await this.tableProductRepository.create({
+          product: product,
+          table: table,
+          quantity: updateProductDto.quantity,
+          status: updateProductDto.status,
+        });
+        await this.tableProductRepository.save(tableProductNew);
+      } else {
+        await this.tableProductRepository.save({
+          id: tableProduct.id,
+          status: updateProductDto.status,
+          quantity: updateProductDto.quantity,
+        });
       }
-      await this.tableProductRepository.delete({
-        id: tableProductId.idTableProduct,
-      });
     }
-    return new HttpException('Delete successful.', HttpStatus.OK);
+    const tableProductByIdTables = await this.tableProductRepository
+      .createQueryBuilder('tableProduct')
+      .innerJoin('tableProduct.table', 'table')
+      .innerJoinAndSelect('tableProduct.product', 'product')
+      .where('table.id = :tableId', { tableId: tableId })
+      .getMany();
+    for (const tableProductByIdTable of tableProductByIdTables) {
+      listProductOld.push(tableProductByIdTable.product.id);
+    }
+    const productIdDeletes = listProductOld.filter(
+      (num) => !listProductNew.includes(num),
+    );
+
+    this.deleteProductInTabel(productIdDeletes, tableId);
+    return new HttpException('Update Table Succsesfully.', HttpStatus.OK);
+  }
+  async deleteProductInTabel(productIdDeletes: any[], tableId) {
+    for (const productIdDelete of productIdDeletes) {
+      const tableProduct = await this.tableProductRepository
+        .createQueryBuilder('tableProduct')
+        .innerJoin('tableProduct.table', 'table')
+        .innerJoin('tableProduct.product', 'product')
+        .where('product.id = :productId', {
+          productId: productIdDelete,
+        })
+        .andWhere('table.id = :tableId', { tableId: tableId })
+        .getOne();
+      await this.tableProductRepository.delete({ id: tableProduct.id });
+    }
   }
 }

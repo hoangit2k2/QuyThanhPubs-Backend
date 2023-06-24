@@ -2,12 +2,11 @@ import {
   Controller,
   Post,
   Body,
-  Param,
   UsePipes,
   ValidationPipe,
   UseGuards,
   Put,
-  Delete,
+  Param,
 } from '@nestjs/common';
 import { TableProductService } from './table_product.service';
 import { CreateTableProductDto } from './dto/create-table_product.dto';
@@ -20,9 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { TableProduct } from './table_product.entity';
 import { AuthGuard } from '../auth/auth.guard';
-import { UpdateTableProductDto } from './dto/update-table_product.dto';
-import { AddNewProductDto } from './dto/add-product.dto';
-import { DeleteTableProduct } from './dto/delete-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('')
 @ApiBearerAuth()
@@ -46,72 +43,28 @@ export class TableProductController {
     return this.tableProductService.create(createTableProductDto);
   }
 
-  // @Get('admin/table_product/:table_id')
-  // getByTableId(@Param('table_id') table_id: number) {
-  //   return this.tableProductService.getByTableId(table_id);
-  // }
-
-  @ApiOperation({ summary: 'Update table product' })
+  @ApiOperation({ summary: 'update table' })
   @ApiResponse({
     description: 'product not found.',
     status: 404,
   })
   @ApiResponse({
-    description: 'create a new table product successfully.',
-    type: TableProduct,
+    description: 'update table successfully.',
+    type: [UpdateProductDto],
     status: 200,
   })
   @ApiBody({
-    type: [UpdateTableProductDto],
+    type: [UpdateProductDto],
   })
-  @Put('admin/tableProduct')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async update(
-    // @Param('tableProductId') tableProductId: number,
-    @Body() updateTableProductDto: UpdateTableProductDto[],
-  ) {
-    return await this.tableProductService.update(updateTableProductDto);
-  }
-
-  @ApiOperation({ summary: 'add product for table' })
-  @ApiResponse({
-    description: 'product not found.',
-    status: 404,
-  })
-  @ApiResponse({
-    description: 'create a new table product successfully.',
-    type: TableProduct,
-    status: 200,
-  })
-  @ApiBody({ type: [AddNewProductDto] })
-  @Post('admin/tableProduct/addProduct/:tableId')
-  @UsePipes(new ValidationPipe({ transform: true }))
-  addProductForTable(
+  @Put('admin/updateTable/:tableId')
+  deleteTableProduct(
     @Param('tableId') tableId: number,
-    @Body() addNewProductDto: AddNewProductDto[],
+    @Body() updateProductDto: UpdateProductDto[],
   ) {
-    return this.tableProductService.addProductForTable(
+    return this.tableProductService.updateProductInTable(
       tableId,
-      addNewProductDto,
+      updateProductDto,
     );
-  }
-
-  @ApiOperation({ summary: 'delete product in table' })
-  @ApiResponse({
-    description: 'product not found.',
-    status: 404,
-  })
-  @ApiResponse({
-    description: 'create a new table product successfully.',
-    type: TableProduct,
-    status: 200,
-  })
-  @ApiBody({
-    type: [DeleteTableProduct],
-  })
-  @UsePipes(new ValidationPipe({ transform: true }))
-  @Delete('admin/tableProduct')
-  deleteTableProduct(@Body() tableProductId: DeleteTableProduct[]) {
-    return this.tableProductService.deleteTableProduct(tableProductId);
   }
 }
