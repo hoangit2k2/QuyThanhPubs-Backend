@@ -91,6 +91,7 @@ export class TableService {
       {
         note: updateTableDto.note,
         status: updateTableDto.status,
+        name: updateTableDto.name
       },
     );
     return new HttpException(
