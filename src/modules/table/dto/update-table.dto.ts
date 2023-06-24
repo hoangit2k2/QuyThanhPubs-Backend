@@ -13,6 +13,5 @@ export class UpdateTableDto {
   note: string;
 
   @ApiProperty()
-  @IsEnum({ TABLE_STATUS })
   status: TABLE_STATUS;
 }
