@@ -113,13 +113,14 @@ export class TableController {
     return this.tableService.findByStatus(status);
   }
 
-  // @Delete(':id')
-  // @ApiOperation({ summary: 'Delete Table By Id' })
-  // @ApiCreatedResponse({
-  //   description: ' Delete table successfully.',
-  // })
-  // @ApiForbiddenResponse({ description: 'Forbidden.' })
-  // remove(@Param('id') id: string) {
-  //   return this.tableService.remove(+id);
-  // }
+  @Get('admin/table/name/findBy')
+  @ApiOperation({ summary: 'Get Table By Name' })
+  @ApiCreatedResponse({
+    description: ' Get table successfully.',
+    type: [Table],
+  })
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
+  getByName(@Query('name') name: string): Promise<Table[]> {
+    return this.tableService.findByName(name);
+  }
 }

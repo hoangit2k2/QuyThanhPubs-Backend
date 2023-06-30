@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTableDto } from './dto/create-table.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Table } from './table.entity';
 import { Users } from '../users/users.entity';
 import { ORDER_PRODUCT_STATUS, TABLE_STATUS } from 'src/common/constant';
@@ -118,17 +118,23 @@ export class TableService {
       .where('table.status = :status', {
         status: status,
       })
+      .innerJoinAndSelect('table.tableProducts', 'tableProducts')
       .orderBy('table.createAt', 'DESC')
       .getMany();
-    // const table = await this.tableRepository.find({
-    //   order: { createAt: 'DESC' },
-    // });
-    // const listTable = [];
-    // for (const tables of table) {
-    //   if (tables.status === status) {
-    //     listTable.push(tables);
-    //   }
-    // }
+    return table;
+  }
+
+  async findByName(name: string) {
+    const table = await this.tableRepository.find({
+      where: {
+        name: ILike(`%${name}%`),
+        status: TABLE_STATUS.SERVING,
+        // type: 'table',
+      },
+    });
+    if (!table) {
+      throw new HttpException('Khong co ban nay', HttpStatus.BAD_REQUEST);
+    }
     return table;
   }
 }

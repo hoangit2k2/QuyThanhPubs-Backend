@@ -96,11 +96,6 @@ export class ProductService {
    * return Product object
    */
   async findbyname(name: string): Promise<Product[]> {
-    // const product = await this.productRepository
-    //   .createQueryBuilder('product')
-    //   .where('product.name like :name', { name: `%${name}%` })
-    //   .getMany();
-    // return product;
     const product = await this.productRepository.find({
       where: {
         name: ILike(`%${name}%`),
