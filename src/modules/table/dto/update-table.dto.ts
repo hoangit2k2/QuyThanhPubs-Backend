@@ -12,7 +12,6 @@ export class UpdateTableDto {
   @MaxLength(200)
   note: string;
 
-  @ApiProperty({ enum: ['serving', 'paid', 'unpaid'] })
-  @IsEnum({ TABLE_STATUS })
+  @ApiProperty()
   status: TABLE_STATUS;
 }

@@ -155,7 +155,6 @@ export class TableProductService {
     );
 
     this.deleteProductInTabel(productIdDeletes, tableId);
-    return new HttpException('Update Table Succsesfully.', HttpStatus.OK);
   }
   async deleteProductInTabel(productIdDeletes: any[], tableId) {
     for (const productIdDelete of productIdDeletes) {
