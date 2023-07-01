@@ -91,7 +91,7 @@ export class TableService {
       {
         note: updateTableDto.note,
         status: updateTableDto.status,
-        name: updateTableDto.name
+        name: updateTableDto.name,
       },
     );
     return new HttpException(
@@ -127,10 +127,10 @@ export class TableService {
 
   async findByName(name: string) {
     const table = await this.tableRepository.find({
+      relations: ['tableProducts'],
       where: {
         name: ILike(`%${name}%`),
         status: TABLE_STATUS.SERVING,
-        // type: 'table',
       },
     });
     if (!table) {
