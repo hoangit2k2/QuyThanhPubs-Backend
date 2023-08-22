@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsNotEmpty, MaxLength } from 'class-validator';
 import { TABLE_STATUS } from 'src/common/constant';
 
 export class UpdateTableDto {

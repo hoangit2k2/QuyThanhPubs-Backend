@@ -7,6 +7,8 @@ import {
   UseGuards,
   Put,
   Param,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { TableProductService } from './table_product.service';
 import { CreateTableProductDto } from './dto/create-table_product.dto';
@@ -19,7 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { TableProduct } from './table_product.entity';
 import { AuthGuard } from '../auth/auth.guard';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { UpdateTableProductDto } from './dto/update-product.dto';
 
 @Controller('')
 @ApiBearerAuth()
@@ -50,21 +52,23 @@ export class TableProductController {
   })
   @ApiResponse({
     description: 'update table successfully.',
-    type: [UpdateProductDto],
+    type: [UpdateTableProductDto],
     status: 200,
   })
   @ApiBody({
-    type: [UpdateProductDto],
+    type: UpdateTableProductDto,
   })
   @UsePipes(new ValidationPipe({ transform: true }))
   @Put('admin/updateTable/:tableId')
   deleteTableProduct(
     @Param('tableId') tableId: number,
-    @Body() updateProductDto: UpdateProductDto[],
+
+    @Body() updateTableProductDto: UpdateTableProductDto,
   ) {
-    return this.tableProductService.updateProductInTable(
+    this.tableProductService.updateProductInTable(
       tableId,
-      updateProductDto,
+      updateTableProductDto,
     );
+    return new HttpException('Cập nhật bàn thành công', HttpStatus.OK);
   }
 }

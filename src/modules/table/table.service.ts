@@ -107,22 +107,27 @@ export class TableService {
         id: id,
       },
     });
-    if (table == null) {
+    if (!table) {
       throw new HttpException('Table not found.', HttpStatus.BAD_REQUEST);
     }
     return table;
   }
 
-  async findByStatus(status: TABLE_STATUS) {
-    const table = await this.tableRepository
+  async findTable(status: TABLE_STATUS, startDate: Date, endDate: Date) {
+    const table = this.tableRepository
       .createQueryBuilder('table')
-      .where('table.status = :status', {
-        status: status,
-      })
-      .innerJoinAndSelect('table.tableProducts', 'tableProducts')
-      .orderBy('table.createAt', 'DESC')
-      .getMany();
-    return table;
+      .innerJoinAndSelect('table.tableProducts', 'tableProducts');
+    if (status) {
+      table.where('table.status = :status', { status: status });
+    }
+    if (startDate && endDate) {
+      table.andWhere('DATE(table.createAt) >= :startDate', {
+        startDate: startDate,
+      });
+      table.andWhere('DATE(table.createAt) <= :endDate', { endDate: endDate });
+    }
+    const result = await table.getMany();
+    return result;
   }
 
   async findByName(name: string) {
@@ -134,7 +139,7 @@ export class TableService {
       },
     });
     if (!table) {
-      throw new HttpException('Khong co ban nay', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Không có bàn này', HttpStatus.BAD_REQUEST);
     }
     return table;
   }

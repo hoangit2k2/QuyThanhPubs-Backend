@@ -29,9 +29,7 @@ export class Users {
   })
   password: string;
 
-  @Column({
-    // type: 'enum',
-  })
+  @Column({})
   role: ROLE;
 
   @OneToMany(() => Table, (table) => table.user)
@@ -39,19 +37,19 @@ export class Users {
 
   @CreateDateColumn({
     name: 'create_at',
-    type: 'date',
+    type: 'timestamptz',
   })
   createAt: Date;
 
   @DeleteDateColumn({
     name: 'delete_at',
-    type: 'date',
+    type: 'timestamptz',
   })
   deleteAt: Date;
 
   @UpdateDateColumn({
     name: 'update_at',
-    type: 'date',
+    type: 'timestamptz',
   })
   updateAt: Date;
 

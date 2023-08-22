@@ -6,8 +6,7 @@ import { Repository } from 'typeorm';
 import { Product } from '../product/product.entity';
 import { Users } from '../users/users.entity';
 import { Table } from '../table/table.entity';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { UpdateApiOptions } from 'cloudinary';
+import { UpdateTableProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class TableProductService {
@@ -92,27 +91,32 @@ export class TableProductService {
    */
   async updateProductInTable(
     tableId: number,
-    updateProductDtos: UpdateProductDto[],
+    updateTableProductDto: UpdateTableProductDto,
   ) {
     const listProductNew = [];
     const listProductOld = [];
-    for (const updateProductDto of updateProductDtos) {
-      listProductNew.push(updateProductDto.product_id);
-      const table = await this.tableRepository.findOneBy({
-        id: tableId,
-      });
-      if (!table) {
-        throw new HttpException(
-          `Id ban ${updateProductDto.product_id} khong ton tai`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+    const table = await this.tableRepository.findOneBy({
+      id: tableId,
+    });
+    if (!table) {
+      throw new HttpException(
+        `Id bàn ${tableId} không tồn tại`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.tableRepository.save({
+      id: tableId,
+      name: updateTableProductDto.nameTable,
+      phone: updateTableProductDto.phone,
+    });
+    for (const listProduct of updateTableProductDto.updateProductDto) {
+      listProductNew.push(listProduct.product_id);
       const product = await this.productRepository.findOneBy({
-        id: updateProductDto.product_id,
+        id: listProduct.product_id,
       });
       if (!product) {
         throw new HttpException(
-          `Id san pham ${updateProductDto.product_id} khong ton tai`,
+          `Id sản phẩm ${listProduct.product_id} không tồn tại`,
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -121,7 +125,7 @@ export class TableProductService {
         .innerJoin('tableProduct.table', 'table')
         .innerJoin('tableProduct.product', 'product')
         .where('product.id = :productId', {
-          productId: updateProductDto.product_id,
+          productId: listProduct.product_id,
         })
         .andWhere('table.id = :tableId', { tableId: tableId })
         .getOne();
@@ -129,15 +133,15 @@ export class TableProductService {
         const tableProductNew = await this.tableProductRepository.create({
           product: product,
           table: table,
-          quantity: updateProductDto.quantity,
-          status: updateProductDto.status,
+          quantity: listProduct.quantity,
+          status: listProduct.status,
         });
         await this.tableProductRepository.save(tableProductNew);
       } else {
         await this.tableProductRepository.save({
           id: tableProduct.id,
-          status: updateProductDto.status,
-          quantity: updateProductDto.quantity,
+          status: listProduct.status,
+          quantity: listProduct.quantity,
         });
       }
     }

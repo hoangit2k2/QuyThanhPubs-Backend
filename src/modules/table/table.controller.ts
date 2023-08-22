@@ -6,7 +6,6 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
-  Patch,
   Put,
   Get,
   Query,
@@ -21,7 +20,6 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOperation,
-  ApiParam,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -109,8 +107,12 @@ export class TableController {
   })
   @ApiForbiddenResponse({ description: 'Forbidden.' })
   @ApiQuery({ name: 'status', enum: TABLE_STATUS })
-  getTableByStatus(@Query('status') status: TABLE_STATUS): Promise<Table[]> {
-    return this.tableService.findByStatus(status);
+  getTableByStatus(
+    @Query('status') status: TABLE_STATUS,
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+  ): Promise<Table[]> {
+    return this.tableService.findTable(status, startDate, endDate);
   }
 
   @Get('admin/table/name/findBy')

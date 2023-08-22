@@ -27,15 +27,21 @@ export class Category {
   @OneToMany(() => Product, (product) => product.category)
   products: Product[];
 
-  @CreateDateColumn()
-  @ApiProperty()
-  create_at: Date;
+  @CreateDateColumn({
+    name: 'create_at',
+    type: 'timestamptz',
+  })
+  createAt: Date;
 
-  @DeleteDateColumn()
-  @ApiProperty()
-  delete_at: Date;
+  @DeleteDateColumn({
+    name: 'delete_at',
+    type: 'timestamptz',
+  })
+  deleteAt: Date;
 
-  @UpdateDateColumn()
-  @ApiProperty()
-  update_at: Date;
+  @UpdateDateColumn({
+    name: 'update_at',
+    type: 'timestamptz',
+  })
+  updateAt: Date;
 }

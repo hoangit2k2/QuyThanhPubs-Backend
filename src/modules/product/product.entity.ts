@@ -48,15 +48,21 @@ export class Product {
   @OneToMany(() => TableProduct, (tableProduct) => tableProduct.product)
   tableProducts: TableProduct[];
 
-  @CreateDateColumn()
-  @ApiProperty()
-  create_at: number;
+  @CreateDateColumn({
+    name: 'create_at',
+    type: 'timestamptz',
+  })
+  createAt: Date;
 
-  @DeleteDateColumn()
-  @ApiProperty()
-  delete_at: number;
+  @DeleteDateColumn({
+    name: 'delete_at',
+    type: 'timestamptz',
+  })
+  deleteAt: Date;
 
-  @UpdateDateColumn()
-  @ApiProperty()
-  update_at: number;
+  @UpdateDateColumn({
+    name: 'update_at',
+    type: 'timestamptz',
+  })
+  updateAt: Date;
 }

@@ -23,6 +23,9 @@ export class Table {
   @Column({ name: 'note', length: 200, nullable: false })
   note: string;
 
+  @Column({ name: 'phone', length: 15, nullable: true })
+  phone: string;
+
   @Column({
     name: 'type',
     type: 'enum',
@@ -39,19 +42,19 @@ export class Table {
 
   @CreateDateColumn({
     name: 'create_at',
-    type: 'date',
+    type: 'timestamp',
   })
   createAt: Date;
 
   @DeleteDateColumn({
     name: 'delete_at',
-    type: 'date',
+    type: 'timestamp',
   })
   deleteAt: Date;
 
   @UpdateDateColumn({
     name: 'update_at',
-    type: 'date',
+    type: 'timestamp',
   })
   updateAt: Date;
 }
